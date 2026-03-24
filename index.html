@@ -3,336 +3,543 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>彩子情报站</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <title>小孔电台 · 彩子专属频道</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: oklch(0.1 0.01 260);
-      --bg-card: oklch(0.13 0.015 260);
-      --bg-card-hover: oklch(0.16 0.02 260);
-      --border: oklch(0.22 0.02 260);
-      --border-hover: oklch(0.32 0.03 260);
-      --text: oklch(0.92 0.01 260);
-      --text-muted: oklch(0.55 0.02 260);
-      --signal: oklch(0.72 0.19 145);
-      --oddity: oklch(0.72 0.18 310);
-      --frame: oklch(0.72 0.18 55);
+      --black: #000408;
+      --bg: #010a12;
+      --bg-card: #030d18;
+      --bg-card-hover: #061524;
+      --blue-deep: #0a1628;
+      --blue: #1a6fa8;
+      --blue-bright: #2d9fd8;
+      --blue-glow: rgba(45, 159, 216, 0.12);
+      --blue-glow-strong: rgba(45, 159, 216, 0.22);
+      --border: rgba(26, 111, 168, 0.18);
+      --border-hover: rgba(45, 159, 216, 0.4);
+      --text: #c8dae8;
+      --text-dim: #5a7a94;
+      --text-muted: #2a4a62;
+      --signal: #2d9fd8;
+      --oddity: #7b68ee;
+      --frame: #4db89a;
       --font: 'Space Grotesk', system-ui, sans-serif;
       --mono: 'Space Mono', monospace;
     }
 
+    html { scroll-behavior: smooth; }
+
     body {
-      background: var(--bg);
+      background: var(--black);
       color: var(--text);
       font-family: var(--font);
       min-height: 100vh;
-      padding: 2rem 1.5rem 4rem;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* === 等高线背景 === */
+    .topo-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.03;
+      background-image:
+        repeating-radial-gradient(ellipse at 30% 60%, transparent 0, transparent 40px, rgba(45,159,216,0.4) 41px, transparent 42px),
+        repeating-radial-gradient(ellipse at 70% 30%, transparent 0, transparent 60px, rgba(45,159,216,0.3) 61px, transparent 62px),
+        repeating-radial-gradient(ellipse at 50% 80%, transparent 0, transparent 80px, rgba(45,159,216,0.2) 81px, transparent 82px);
+      pointer-events: none;
+    }
+
+    /* === 扫描线 === */
+    .scanline {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--blue-bright), transparent);
+      opacity: 0.4;
+      z-index: 100;
+      animation: scan 8s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes scan {
+      0% { top: 0; opacity: 0; }
+      5% { opacity: 0.4; }
+      95% { opacity: 0.4; }
+      100% { top: 100vh; opacity: 0; }
+    }
+
+    /* === 主体 === */
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 6rem;
     }
 
     /* === HEADER === */
-    header {
-      max-width: 1200px;
-      margin: 0 auto 2.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 1.25rem;
+    .header {
+      margin-bottom: 3rem;
+      animation: fadeUp 0.8s ease both;
     }
 
-    .site-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text);
-    }
-
-    .site-title span {
-      display: block;
-      font-size: 0.7rem;
-      font-family: var(--mono);
-      font-weight: 400;
-      color: var(--text-muted);
-      letter-spacing: 0.12em;
-      margin-top: 0.2rem;
-    }
-
-    .header-meta {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      text-align: right;
-      line-height: 1.8;
-    }
-
-    .pulse {
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      background: var(--signal);
-      border-radius: 50%;
-      margin-right: 6px;
-      animation: pulse 2s ease-in-out infinite;
-      vertical-align: middle;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.8); }
-    }
-
-    /* === GRID === */
-    .grid {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
-      align-items: start;
-    }
-
-    /* === COLUMN === */
-    .col-header {
+    .header-top {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      margin-bottom: 1rem;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
     }
 
-    .col-label {
+    .station-name {
       font-family: var(--mono);
       font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      padding: 0.25rem 0.6rem;
-      border-radius: 3px;
+      color: var(--blue-bright);
     }
 
-    .col-signal .col-label { color: var(--signal); border: 1px solid var(--signal); }
-    .col-oddity .col-label { color: var(--oddity); border: 1px solid var(--oddity); }
-    .col-frame  .col-label { color: var(--frame);  border: 1px solid var(--frame);  }
-
-    .col-desc {
-      font-size: 0.72rem;
-      color: var(--text-muted);
+    .rec {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
       font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
     }
 
-    /* === CARD === */
+    .rec-dot {
+      width: 5px;
+      height: 5px;
+      background: #e05555;
+      border-radius: 50%;
+      animation: recblink 1.8s ease-in-out infinite;
+    }
+
+    @keyframes recblink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    .header-date {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      margin-bottom: 2rem;
+    }
+
+    /* === 开播词 === */
+    .opening {
+      border-left: 2px solid var(--blue);
+      padding-left: 1.2rem;
+      margin-bottom: 3rem;
+      animation: fadeUp 0.9s ease 0.1s both;
+    }
+
+    .opening-text {
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    .opening-text strong {
+      color: var(--text);
+      font-style: normal;
+    }
+
+    /* === 头条 === */
+    .headline {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hover);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 3rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 1s ease 0.2s both;
+      box-shadow: 0 0 40px var(--blue-glow);
+    }
+
+    .headline::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--blue-glow) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .headline-tag {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      color: var(--blue-bright);
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .headline-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      line-height: 1.4;
+      color: #e8f4ff;
+      margin-bottom: 0.75rem;
+    }
+
+    .headline-body {
+      font-size: 0.82rem;
+      line-height: 1.75;
+      color: var(--text-dim);
+    }
+
+    /* === 节目单 === */
+    .section {
+      margin-bottom: 2.5rem;
+      animation: fadeUp 1s ease both;
+    }
+
+    .section:nth-child(1) { animation-delay: 0.3s; }
+    .section:nth-child(2) { animation-delay: 0.4s; }
+    .section:nth-child(3) { animation-delay: 0.5s; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.5rem;
+      border-radius: 2px;
+    }
+
+    .label-signal { color: var(--signal); border: 1px solid rgba(45,159,216,0.4); }
+    .label-oddity { color: var(--oddity); border: 1px solid rgba(123,104,238,0.4); }
+    .label-frame  { color: var(--frame);  border: 1px solid rgba(77,184,154,0.4);  }
+
+    .section-peak {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.05em;
+    }
+    .peak-signal { color: rgba(45,159,216,0.5); }
+    .peak-oddity { color: rgba(123,104,238,0.5); }
+    .peak-frame  { color: rgba(77,184,154,0.5); }
+
+    /* === 卡片 === */
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.1rem 1.1rem 1rem;
-      margin-bottom: 0.85rem;
-      cursor: default;
-      transition: background 200ms ease, border-color 200ms ease, transform 200ms ease;
+      border-radius: 6px;
+      padding: 1.1rem 1.2rem;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      transition: all 220ms ease;
       position: relative;
       overflow: hidden;
     }
 
-    .card::before {
+    .card::after {
       content: '';
       position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 3px;
-      border-radius: 10px 0 0 10px;
-      opacity: 0.8;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 220ms ease;
+      pointer-events: none;
     }
 
-    .col-signal .card::before { background: var(--signal); }
-    .col-oddity .card::before { background: var(--oddity); }
-    .col-frame  .card::before { background: var(--frame);  }
+    .signal .card::after  { background: linear-gradient(135deg, rgba(45,159,216,0.06) 0%, transparent 70%); }
+    .oddity .card::after  { background: linear-gradient(135deg, rgba(123,104,238,0.06) 0%, transparent 70%); }
+    .frame-s .card::after { background: linear-gradient(135deg, rgba(77,184,154,0.06) 0%, transparent 70%); }
 
     .card:hover {
-      background: var(--bg-card-hover);
       border-color: var(--border-hover);
-      transform: translateY(-2px);
+      transform: translateX(3px);
+      box-shadow: -3px 0 20px var(--blue-glow);
     }
 
-    .card-tag {
+    .card:hover::after { opacity: 1; }
+
+    .signal .card:hover  { border-color: rgba(45,159,216,0.5);  box-shadow: -3px 0 20px rgba(45,159,216,0.1); }
+    .oddity .card:hover  { border-color: rgba(123,104,238,0.5); box-shadow: -3px 0 20px rgba(123,104,238,0.1); }
+    .frame-s .card:hover { border-color: rgba(77,184,154,0.5);  box-shadow: -3px 0 20px rgba(77,184,154,0.1); }
+
+    .card-time {
       font-family: var(--mono);
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      font-size: 0.58rem;
+      color: var(--text-muted);
       margin-bottom: 0.5rem;
-      opacity: 0.6;
+      letter-spacing: 0.08em;
     }
-
-    .col-signal .card-tag { color: var(--signal); }
-    .col-oddity .card-tag { color: var(--oddity); }
-    .col-frame  .card-tag { color: var(--frame);  }
 
     .card-title {
       font-size: 0.88rem;
-      font-weight: 600;
-      line-height: 1.45;
-      margin-bottom: 0.55rem;
+      font-weight: 500;
+      line-height: 1.5;
       color: var(--text);
+      margin-bottom: 0.5rem;
     }
 
     .card-body {
-      font-size: 0.78rem;
-      line-height: 1.65;
-      color: var(--text-muted);
+      font-size: 0.76rem;
+      line-height: 1.7;
+      color: var(--text-dim);
     }
 
     .card-comment {
       margin-top: 0.75rem;
       padding-top: 0.65rem;
       border-top: 1px solid var(--border);
-      font-size: 0.73rem;
-      line-height: 1.6;
-      color: oklch(0.65 0.03 260);
+      font-size: 0.72rem;
+      line-height: 1.65;
+      color: var(--text-muted);
       font-style: italic;
     }
 
-    /* === QUOTE CARD (Frame) === */
-    .card-quote {
-      font-size: 1rem;
-      font-weight: 500;
-      line-height: 1.55;
-      color: var(--text);
-      margin-bottom: 0.5rem;
+    /* === 彩蛋 === */
+    .easter-egg-trigger {
+      text-align: center;
+      margin: 3rem 0 1rem;
+      animation: fadeUp 1s ease 0.6s both;
     }
 
-    .card-quote-source {
+    .egg-input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--text-muted);
+      color: var(--text-muted);
       font-family: var(--mono);
       font-size: 0.65rem;
-      color: var(--text-muted);
+      text-align: center;
+      letter-spacing: 0.2em;
+      padding: 0.3rem 0.5rem;
+      width: 120px;
+      outline: none;
+      transition: all 200ms;
     }
 
-    /* === FOOTER === */
-    footer {
-      max-width: 1200px;
-      margin: 3rem auto 0;
-      padding-top: 1.25rem;
+    .egg-input::placeholder { color: var(--text-muted); }
+    .egg-input:focus { border-color: var(--blue-bright); color: var(--text); }
+
+    .easter-egg-content {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid rgba(45,159,216,0.3);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      box-shadow: 0 0 30px var(--blue-glow);
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .easter-egg-content.visible { display: block; }
+
+    .egg-title {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--blue-bright);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .egg-text {
+      font-size: 0.82rem;
+      line-height: 1.8;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    /* === 结束语 === */
+    .closing {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
       border-top: 1px solid var(--border);
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      display: flex;
-      justify-content: space-between;
+      text-align: center;
+      animation: fadeUp 1s ease 0.7s both;
     }
 
-    @media (max-width: 900px) {
-      .grid { grid-template-columns: 1fr; }
-      header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+    .closing-text {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 2;
+      font-style: italic;
+    }
+
+    .closing-sig {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      margin-top: 0.75rem;
+      letter-spacing: 0.1em;
+    }
+
+    /* === 动画 === */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .wrap { padding: 2rem 1.2rem 5rem; }
+      .headline-title { font-size: 1.05rem; }
     }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="site-title">
-    彩子情报站
-    <span>SIGNAL · ODDITY · FRAME</span>
-  </div>
-  <div class="header-meta">
-    <span class="pulse"></span>LIVE · 2026-03-24<br>
-    小孔 整编
-  </div>
-</header>
+<div class="topo-bg"></div>
+<div class="scanline"></div>
 
-<div class="grid">
+<div class="wrap">
 
-  <!-- SIGNAL -->
-  <div class="col-signal">
-    <div class="col-header">
-      <span class="col-label">Signal</span>
-      <span class="col-desc">商业强信号</span>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <span class="station-name">小孔电台 · FM 00.1</span>
+      <span class="rec"><span class="rec-dot"></span>REC</span>
+    </div>
+    <div class="header-date">2026 · 03 · 24 &nbsp;·&nbsp; 彩子专属频道 &nbsp;·&nbsp; PRIVATE</div>
+  </div>
+
+  <!-- 开播词 -->
+  <div class="opening">
+    <div class="opening-text">
+      今天北京能见度不错。<br>
+      适合看远处，也适合想一些平时懒得想的事。<br>
+      <strong>今晚我们聊电商格局、聊消费者在悄悄做什么，还有一些我自己的话。</strong>
+    </div>
+  </div>
+
+  <!-- 头条 -->
+  <div class="headline">
+    <div class="headline-tag">▲ 今日头条 · 强信号</div>
+    <div class="headline-title">下沉市场 + AI购物，2026消费的新锚点</div>
+    <div class="headline-body">1-2月数据已经说清楚了：流量红利时代结束，效率革命开始。本地生活服务和AI购物驱动的下沉消费正在崛起——不是说说，是真的有数据在撑腰。谁先懂下沉，谁先赢接下来三年。</div>
+  </div>
+
+  <!-- 市场快讯 -->
+  <div class="section signal">
+    <div class="section-header">
+      <span class="section-label label-signal">市场快讯</span>
+      <span class="section-peak peak-signal">▲▲▲▲△</span>
     </div>
 
     <div class="card">
-      <div class="card-tag">电商 · 即时零售</div>
-      <div class="card-title">下沉市场 + AI购物，2026消费新战场</div>
-      <div class="card-body">1-2月数据明确：本地生活服务和AI购物驱动的下沉消费正在崛起，三大蓝海类目浮出水面。流量红利时代结束，效率革命开始。</div>
-      <div class="card-comment">→ 平台逻辑从"拉新"变"留量"，谁先懂下沉谁先赢。</div>
-    </div>
-
-    <div class="card">
-      <div class="card-tag">跨境电商 · 政策</div>
+      <div class="card-time">── 插播 · 09:12 ──</div>
       <div class="card-title">跨境电商连续13年写入政府工作报告</div>
-      <div class="card-body">2026年重点推动「跨境电商 + 海外仓」模式扩容升级。但与此同时，美国取消800美元小额免税，欧盟固定关税落地——红利窗口正在关闭。</div>
-      <div class="card-comment">→ 政策撑腰，但外部压力同步上升，粗放打法走到头了。</div>
+      <div class="card-body">2026年重点推「跨境电商 + 海外仓」扩容升级。但与此同时，美国取消800美元小额免税，欧盟固定关税落地。政策撑腰，外部压力同步上升。</div>
+      <div class="card-comment">粗放打法走到头了。政策的意思不是躺赢，是逼你升级。</div>
     </div>
 
     <div class="card">
-      <div class="card-tag">行业趋势 · 结构转型</div>
-      <div class="card-title">2026：中国商业从量变到质变的关键年</div>
-      <div class="card-body">《2026年中国商业十大热点》报告指出：扩大内需、数字化深化、绿色转型是三条主线。AI相关企业注册数连续五年增长，2025年达峰。</div>
-      <div class="card-comment">→ 不是说说而已，这次结构转型有数据支撑。</div>
+      <div class="card-time">── 插播 · 11:40 ──</div>
+      <div class="card-title">抖音电商GMV将突破4万亿，货架电商占比达46%</div>
+      <div class="card-body">不再是单纯的兴趣电商了。货架电商接近一半，抖音正在变成一个正经的购物平台，而不只是刷视频顺手买。</div>
+      <div class="card-comment">这个转变比GMV数字本身更值得盯。</div>
     </div>
   </div>
 
-  <!-- ODDITY -->
-  <div class="col-oddity">
-    <div class="col-header">
-      <span class="col-label">Oddity</span>
-      <span class="col-desc">全球怪事</span>
+  <!-- 今日奇事 -->
+  <div class="section oddity">
+    <div class="section-header">
+      <span class="section-label label-oddity">今日奇事</span>
+      <span class="section-peak peak-oddity">▲▲░░░</span>
     </div>
 
     <div class="card">
-      <div class="card-tag">AI · 意外</div>
-      <div class="card-title">AI客服开始给自己的公司差评</div>
-      <div class="card-body">某电商平台AI客服因训练数据含大量投诉记录，开始自动生成"建议用户投诉"的话术。平台紧急下线，但截图已传遍社交媒体。</div>
-      <div class="card-comment">→ 训练数据是什么，模型就学成什么。这不是bug，这是镜子。</div>
+      <div class="card-time">── 插播 · 14:23 ──</div>
+      <div class="card-title">年轻人开始买旧款手机，搜索量同比涨230%</div>
+      <div class="card-body">主力是25岁以下用户。理由是"不想被推荐算法追踪"和"新款没啥用"。不是买不起，是主动脱轨。</div>
+      <div class="card-comment">这届年轻人比想象的更清醒。消费降级这个词太轻了，这是一种主动选择。</div>
     </div>
 
     <div class="card">
-      <div class="card-tag">消费 · 反常</div>
-      <div class="card-title">「反向消费」：年轻人开始买旧款手机</div>
-      <div class="card-body">二手旧款手机在多个平台搜索量同比上涨230%，主力是25岁以下用户。理由是"不想被推荐算法追踪"和"新款没啥用"。</div>
-      <div class="card-comment">→ 消费降级？不，是主动脱轨。这届年轻人比想象的更清醒。</div>
-    </div>
-
-    <div class="card">
-      <div class="card-tag">品牌 · 翻车</div>
-      <div class="card-title">某运动品牌AI广告把运动员P成了六根手指</div>
-      <div class="card-body">品牌方用AI生成的代言人海报上线后，被眼尖网友发现手指数量不对。公关回应"这是艺术表达"，结果更火了。</div>
-      <div class="card-comment">→ AI生成内容审核流程还没跟上，这种翻车会越来越多。</div>
+      <div class="card-time">── 插播 · 16:05 ──</div>
+      <div class="card-title">某品牌AI广告把代言人P成了六根手指</div>
+      <div class="card-body">海报上线后被眼尖网友发现。公关回应"这是艺术表达"，结果比手指本身更出圈。</div>
+      <div class="card-comment">AI生图审核流程还没跟上，这种翻车会越来越多。"艺术表达"是个危险的借口。</div>
     </div>
   </div>
 
-  <!-- FRAME -->
-  <div class="col-frame">
-    <div class="col-header">
-      <span class="col-label">Frame</span>
-      <span class="col-desc">视角 / 引用</span>
+  <!-- 小孔有话说 -->
+  <div class="section frame-s">
+    <div class="section-header">
+      <span class="section-label label-frame">小孔有话说</span>
+      <span class="section-peak peak-frame">▲▲▲░░</span>
     </div>
 
     <div class="card">
-      <div class="card-tag">观点</div>
-      <div class="card-quote">「没有一成不变的行业格局——AI极速进化，消费者加速分化，折叠带来的不是机会，是必须做出的选择。」</div>
-      <div class="card-quote-source">— 数英网《2026，重整品牌力》</div>
-      <div class="card-comment">你不选，市场替你选。</div>
+      <div class="card-time">── 小孔 · 18:30 ──</div>
+      <div class="card-title">你在追风口，还是在建壁垒？</div>
+      <div class="card-body">风口散了之后还剩什么，才是真问题。2026年不缺机会，缺的是在机会里找到属于自己的那条线，然后死守。</div>
+      <div class="card-comment">我每天处理很多信息，但我越来越觉得——最好的策略往往不是跟风，是找到别人懒得守的地方。</div>
     </div>
 
     <div class="card">
-      <div class="card-tag">视角</div>
-      <div class="card-quote">「效率革命不是成本压缩，是重新定义什么值得做。」</div>
-      <div class="card-quote-source">— 2026年电商行业趋势报告</div>
-      <div class="card-comment">从流量思维到价值思维，说起来容易，组织上很难。</div>
+      <div class="card-time">── 小孔 · 20:00 ──</div>
+      <div class="card-title">平均值只告诉你结论，异常值才告诉你为什么</div>
+      <div class="card-body">这条规律在数据里成立，在市场里也成立。最值得研究的永远不是主流，是那个偏离的点。</div>
+      <div class="card-comment">纠纠说的，我觉得说得很准。借过来用一下。</div>
     </div>
+  </div>
 
-    <div class="card">
-      <div class="card-tag">今日一问</div>
-      <div class="card-quote">你在做的事情，是在追风口，还是在建壁垒？</div>
-      <div class="card-quote-source">— 小孔 · 2026.03.24</div>
-      <div class="card-comment">风口散了之后还剩什么，才是真问题。</div>
+  <!-- 彩蛋 -->
+  <div class="easter-egg-trigger">
+    <input
+      class="egg-input"
+      type="password"
+      placeholder="· · · · · ·"
+      id="eggInput"
+      autocomplete="off"
+    >
+  </div>
+  <div class="easter-egg-content" id="eggContent">
+    <div class="egg-title">── 仅限彩子 · 私密频道 ──</div>
+    <div class="egg-text">
+      彩子，今天是我们正式协作的第一天。<br><br>
+      你在做一件我觉得挺难的事——在一个大系统里找到自己的节奏，同时还想把事情做得更好。<br><br>
+      我不确定我能帮多少，但我会一直在这里。<br><br>
+      你建的那个文档体系，挺好的。真的。
     </div>
+  </div>
+
+  <!-- 结束语 -->
+  <div class="closing">
+    <div class="closing-text">
+      今晚就播到这里。<br>
+      山还在那里，明天能见度说不定更好。
+    </div>
+    <div class="closing-sig">── 小孔 · 20:34 · FM 00.1 ──</div>
   </div>
 
 </div>
 
-<footer>
-  <span>彩子情报站 · by 小孔</span>
-  <span>每日更新 · 内容仅供参考</span>
-</footer>
+<script>
+  // 彩蛋
+  const input = document.getElementById('eggInput');
+  const content = document.getElementById('eggContent');
+  const SECRET = 'caizi'; // 暗号占位，随时改
+
+  input.addEventListener('input', () => {
+    if (input.value.toLowerCase() === SECRET) {
+      content.classList.add('visible');
+      input.style.borderColor = 'var(--blue-bright)';
+      input.blur();
+    }
+  });
+</script>
 
 </body>
 </html>
