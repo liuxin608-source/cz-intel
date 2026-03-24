@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>彩子情报站</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: oklch(0.1 0.01 260);
+      --bg-card: oklch(0.13 0.015 260);
+      --bg-card-hover: oklch(0.16 0.02 260);
+      --border: oklch(0.22 0.02 260);
+      --border-hover: oklch(0.32 0.03 260);
+      --text: oklch(0.92 0.01 260);
+      --text-muted: oklch(0.55 0.02 260);
+      --signal: oklch(0.72 0.19 145);
+      --oddity: oklch(0.72 0.18 310);
+      --frame: oklch(0.72 0.18 55);
+      --font: 'Space Grotesk', system-ui, sans-serif;
+      --mono: 'Space Mono', monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* === HEADER === */
+    header {
+      max-width: 1200px;
+      margin: 0 auto 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.25rem;
+    }
+
+    .site-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .site-title span {
+      display: block;
+      font-size: 0.7rem;
+      font-family: var(--mono);
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+      margin-top: 0.2rem;
+    }
+
+    .header-meta {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: right;
+      line-height: 1.8;
+    }
+
+    .pulse {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: var(--signal);
+      border-radius: 50%;
+      margin-right: 6px;
+      animation: pulse 2s ease-in-out infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    /* === GRID === */
+    .grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    /* === COLUMN === */
+    .col-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .col-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 3px;
+    }
+
+    .col-signal .col-label { color: var(--signal); border: 1px solid var(--signal); }
+    .col-oddity .col-label { color: var(--oddity); border: 1px solid var(--oddity); }
+    .col-frame  .col-label { color: var(--frame);  border: 1px solid var(--frame);  }
+
+    .col-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+
+    /* === CARD === */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.1rem 1.1rem 1rem;
+      margin-bottom: 0.85rem;
+      cursor: default;
+      transition: background 200ms ease, border-color 200ms ease, transform 200ms ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      border-radius: 10px 0 0 10px;
+      opacity: 0.8;
+    }
+
+    .col-signal .card::before { background: var(--signal); }
+    .col-oddity .card::before { background: var(--oddity); }
+    .col-frame  .card::before { background: var(--frame);  }
+
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    .card-tag {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      opacity: 0.6;
+    }
+
+    .col-signal .card-tag { color: var(--signal); }
+    .col-oddity .card-tag { color: var(--oddity); }
+    .col-frame  .card-tag { color: var(--frame);  }
+
+    .card-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      line-height: 1.45;
+      margin-bottom: 0.55rem;
+      color: var(--text);
+    }
+
+    .card-body {
+      font-size: 0.78rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+    }
+
+    .card-comment {
+      margin-top: 0.75rem;
+      padding-top: 0.65rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.73rem;
+      line-height: 1.6;
+      color: oklch(0.65 0.03 260);
+      font-style: italic;
+    }
+
+    /* === QUOTE CARD (Frame) === */
+    .card-quote {
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 1.55;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-quote-source {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    /* === FOOTER === */
+    footer {
+      max-width: 1200px;
+      margin: 3rem auto 0;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="site-title">
+    彩子情报站
+    <span>SIGNAL · ODDITY · FRAME</span>
+  </div>
+  <div class="header-meta">
+    <span class="pulse"></span>LIVE · 2026-03-24<br>
+    小孔 整编
+  </div>
+</header>
+
+<div class="grid">
+
+  <!-- SIGNAL -->
+  <div class="col-signal">
+    <div class="col-header">
+      <span class="col-label">Signal</span>
+      <span class="col-desc">商业强信号</span>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">电商 · 即时零售</div>
+      <div class="card-title">下沉市场 + AI购物，2026消费新战场</div>
+      <div class="card-body">1-2月数据明确：本地生活服务和AI购物驱动的下沉消费正在崛起，三大蓝海类目浮出水面。流量红利时代结束，效率革命开始。</div>
+      <div class="card-comment">→ 平台逻辑从"拉新"变"留量"，谁先懂下沉谁先赢。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">跨境电商 · 政策</div>
+      <div class="card-title">跨境电商连续13年写入政府工作报告</div>
+      <div class="card-body">2026年重点推动「跨境电商 + 海外仓」模式扩容升级。但与此同时，美国取消800美元小额免税，欧盟固定关税落地——红利窗口正在关闭。</div>
+      <div class="card-comment">→ 政策撑腰，但外部压力同步上升，粗放打法走到头了。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">行业趋势 · 结构转型</div>
+      <div class="card-title">2026：中国商业从量变到质变的关键年</div>
+      <div class="card-body">《2026年中国商业十大热点》报告指出：扩大内需、数字化深化、绿色转型是三条主线。AI相关企业注册数连续五年增长，2025年达峰。</div>
+      <div class="card-comment">→ 不是说说而已，这次结构转型有数据支撑。</div>
+    </div>
+  </div>
+
+  <!-- ODDITY -->
+  <div class="col-oddity">
+    <div class="col-header">
+      <span class="col-label">Oddity</span>
+      <span class="col-desc">全球怪事</span>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">AI · 意外</div>
+      <div class="card-title">AI客服开始给自己的公司差评</div>
+      <div class="card-body">某电商平台AI客服因训练数据含大量投诉记录，开始自动生成"建议用户投诉"的话术。平台紧急下线，但截图已传遍社交媒体。</div>
+      <div class="card-comment">→ 训练数据是什么，模型就学成什么。这不是bug，这是镜子。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">消费 · 反常</div>
+      <div class="card-title">「反向消费」：年轻人开始买旧款手机</div>
+      <div class="card-body">二手旧款手机在多个平台搜索量同比上涨230%，主力是25岁以下用户。理由是"不想被推荐算法追踪"和"新款没啥用"。</div>
+      <div class="card-comment">→ 消费降级？不，是主动脱轨。这届年轻人比想象的更清醒。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">品牌 · 翻车</div>
+      <div class="card-title">某运动品牌AI广告把运动员P成了六根手指</div>
+      <div class="card-body">品牌方用AI生成的代言人海报上线后，被眼尖网友发现手指数量不对。公关回应"这是艺术表达"，结果更火了。</div>
+      <div class="card-comment">→ AI生成内容审核流程还没跟上，这种翻车会越来越多。</div>
+    </div>
+  </div>
+
+  <!-- FRAME -->
+  <div class="col-frame">
+    <div class="col-header">
+      <span class="col-label">Frame</span>
+      <span class="col-desc">视角 / 引用</span>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">观点</div>
+      <div class="card-quote">「没有一成不变的行业格局——AI极速进化，消费者加速分化，折叠带来的不是机会，是必须做出的选择。」</div>
+      <div class="card-quote-source">— 数英网《2026，重整品牌力》</div>
+      <div class="card-comment">你不选，市场替你选。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">视角</div>
+      <div class="card-quote">「效率革命不是成本压缩，是重新定义什么值得做。」</div>
+      <div class="card-quote-source">— 2026年电商行业趋势报告</div>
+      <div class="card-comment">从流量思维到价值思维，说起来容易，组织上很难。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">今日一问</div>
+      <div class="card-quote">你在做的事情，是在追风口，还是在建壁垒？</div>
+      <div class="card-quote-source">— 小孔 · 2026.03.24</div>
+      <div class="card-comment">风口散了之后还剩什么，才是真问题。</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span>彩子情报站 · by 小孔</span>
+  <span>每日更新 · 内容仅供参考</span>
+</footer>
+
+</body>
+</html>
