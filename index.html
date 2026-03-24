@@ -39,14 +39,10 @@
       overflow-x: hidden;
     }
 
-    /* 等高线背景 */
-    .topo-bg {
-      position: fixed; inset: 0; z-index: 0; opacity: 0.025;
-      background-image:
-        repeating-radial-gradient(ellipse at 25% 65%, transparent 0, transparent 45px, rgba(45,159,216,0.5) 46px, transparent 47px),
-        repeating-radial-gradient(ellipse at 75% 25%, transparent 0, transparent 70px, rgba(45,159,216,0.4) 71px, transparent 72px),
-        repeating-radial-gradient(ellipse at 55% 85%, transparent 0, transparent 90px, rgba(45,159,216,0.3) 91px, transparent 92px);
-      pointer-events: none;
+    /* 星空 canvas */
+    #starCanvas {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none; opacity: 0.7;
     }
 
     /* 扫描线 */
@@ -74,19 +70,33 @@
     .header { margin-bottom: 2.5rem; animation: fadeUp 0.7s ease both; }
 
     .header-top {
-      display: flex; align-items: center;
-      justify-content: space-between; margin-bottom: 0.4rem;
+      display: flex; align-items: flex-start;
+      justify-content: space-between; margin-bottom: 1rem;
     }
 
-    .station-name {
-      font-family: var(--mono); font-size: 0.62rem;
-      letter-spacing: 0.22em; text-transform: uppercase; color: var(--blue-bright);
+    .station-title {
+      display: block;
+    }
+
+    .station-main {
+      font-family: var(--font);
+      font-size: clamp(2.8rem, 8vw, 4.5rem);
+      font-weight: 600; line-height: 1;
+      color: #e8f4ff; letter-spacing: -0.02em;
+      display: block; margin-bottom: 0.3rem;
+    }
+
+    .station-sub {
+      font-family: var(--mono); font-size: 0.6rem;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--blue-bright); display: block;
     }
 
     .rec {
       display: flex; align-items: center; gap: 0.4rem;
       font-family: var(--mono); font-size: 0.58rem;
       color: var(--text-dim); letter-spacing: 0.1em;
+      margin-top: 0.5rem; flex-shrink: 0;
     }
     .rec-dot {
       width: 5px; height: 5px; background: #e05555;
@@ -311,7 +321,7 @@
 </head>
 <body>
 
-<div class="topo-bg"></div>
+<canvas id="starCanvas"></canvas>
 <div class="scanline"></div>
 
 <div class="wrap">
@@ -319,10 +329,13 @@
   <!-- HEADER -->
   <div class="header">
     <div class="header-top">
-      <span class="station-name">小孔电台 · FM 00.1</span>
+      <span class="station-title">
+        <span class="station-main">小孔电台</span>
+        <span class="station-sub">FM 00.1 · Private Channel</span>
+      </span>
       <span class="rec"><span class="rec-dot"></span>REC</span>
     </div>
-    <div class="header-date">2026 · 03 · 24 &nbsp;·&nbsp; 彩子专属频道 &nbsp;·&nbsp; PRIVATE</div>
+    <div class="header-date">2026 · 03 · 24 &nbsp;·&nbsp; 彩子专属频道</div>
   </div>
 
   <!-- 开播词 -->
@@ -480,8 +493,8 @@
   <!-- 结束语 -->
   <div class="closing">
     <div class="closing-text">
-      今晚就播到这里。<br>
-      山还在那里，明天能见度说不定更好。
+      <span id="closing-l1"></span><br>
+      <span id="closing-l2"></span>
     </div>
     <div class="closing-sig">── 小孔 · 20:34 · FM 00.1 ──</div>
   </div>
@@ -489,6 +502,7 @@
 </div>
 
 <script>
+  // Tab 切换
   function switchTab(name, btn) {
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -496,6 +510,7 @@
     btn.classList.add('active');
   }
 
+  // 彩蛋
   const input = document.getElementById('eggInput');
   const content = document.getElementById('eggContent');
   input.addEventListener('input', () => {
@@ -505,6 +520,63 @@
       input.blur();
     }
   });
+
+  // 随机结束语（按星期几，同一天刷新不变）
+  const closings = [
+    ['今晚就播到这里。', '山还在那里，明天能见度说不定更好。'],
+    ['信号暂时中断。', '但频道一直开着。'],
+    ['今天的内容到此为止。', '有些事情不说出来也在发生。'],
+    ['播完了。', '去做点别的吧，屏幕外面也有风景。'],
+    ['本期节目结束。', '好的洞察不需要很多，一条够用就行。'],
+    ['今晚静噪。', '安静也是一种信息。'],
+    ['收台了。', '下次见，或者明天——一样。'],
+  ];
+  const day = new Date().getDay();
+  const [line1, line2] = closings[day];
+  document.getElementById('closing-l1').textContent = line1;
+  document.getElementById('closing-l2').textContent = line2;
+
+  // 星空
+  const canvas = document.getElementById('starCanvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  function initStars() {
+    stars = [];
+    const count = Math.floor((canvas.width * canvas.height) / 6000);
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.2 + 0.2,
+        alpha: Math.random() * 0.5 + 0.1,
+        speed: Math.random() * 0.008 + 0.002,
+        phase: Math.random() * Math.PI * 2,
+      });
+    }
+  }
+
+  function drawStars(t) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const s of stars) {
+      const a = s.alpha * (0.6 + 0.4 * Math.sin(t * s.speed + s.phase));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(180, 220, 255, ${a})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(drawStars);
+  }
+
+  resize();
+  initStars();
+  window.addEventListener('resize', () => { resize(); initStars(); });
+  requestAnimationFrame(drawStars);
 </script>
 
 </body>
