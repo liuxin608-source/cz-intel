@@ -39,13 +39,11 @@
       overflow-x: hidden;
     }
 
-    /* 星空 canvas */
     #starCanvas {
       position: fixed; inset: 0; z-index: 0;
       pointer-events: none; opacity: 0.7;
     }
 
-    /* 扫描线 */
     .scanline {
       position: fixed; top: 0; left: 0; right: 0; height: 1px;
       background: linear-gradient(90deg, transparent, var(--blue-bright), transparent);
@@ -66,7 +64,6 @@
       padding: 3rem 1.5rem 6rem;
     }
 
-    /* === HEADER === */
     .header { margin-bottom: 2.5rem; animation: fadeUp 0.7s ease both; }
 
     .header-top {
@@ -74,9 +71,7 @@
       justify-content: space-between; margin-bottom: 1rem;
     }
 
-    .station-title {
-      display: block;
-    }
+    .station-title { display: block; }
 
     .station-main {
       font-family: var(--font);
@@ -109,7 +104,6 @@
       color: var(--text-muted); letter-spacing: 0.08em; margin-bottom: 2rem;
     }
 
-    /* 开播词 */
     .opening {
       border-left: 2px solid var(--blue);
       padding-left: 1.2rem; margin-bottom: 2.5rem;
@@ -121,7 +115,6 @@
     }
     .opening-text strong { color: var(--text); font-style: normal; }
 
-    /* 头条 */
     .headline {
       background: var(--bg-card);
       border: 1px solid var(--border-hover);
@@ -156,7 +149,6 @@
     }
     .headline-source:hover { color: var(--blue-bright); }
 
-    /* === TABS === */
     .tabs {
       display: flex; gap: 0;
       border-bottom: 1px solid var(--border);
@@ -180,11 +172,9 @@
     .tab-btn.active.t-frame  { color: var(--frame);  border-bottom-color: var(--frame); }
     .tab-btn.active.t-picks  { color: var(--picks);  border-bottom-color: var(--picks); }
 
-    /* === TAB PANELS === */
     .tab-panel { display: none; animation: fadeUp 0.4s ease both; }
     .tab-panel.active { display: block; }
 
-    /* === 卡片 === */
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -233,7 +223,6 @@
     .source-link:hover { color: var(--blue-bright); }
     .source-link::after { content: '↗'; font-size: 0.5rem; }
 
-    /* picks 特殊样式 */
     .pick-tag {
       font-family: var(--mono); font-size: 0.55rem;
       letter-spacing: 0.12em; text-transform: uppercase;
@@ -252,14 +241,12 @@
       color: var(--text-dim); font-style: italic;
     }
 
-    /* 山峰信号强度 */
     .section-peak {
       font-family: var(--mono); font-size: 0.6rem;
       color: var(--text-muted); margin-bottom: 1.2rem;
       letter-spacing: 0.04em;
     }
 
-    /* 彩蛋 */
     .easter-egg-trigger {
       text-align: center; margin: 3rem 0 0.5rem;
       animation: fadeUp 0.9s ease 0.5s both;
@@ -292,7 +279,6 @@
       color: var(--text-dim); font-style: italic;
     }
 
-    /* 结束语 */
     .closing {
       margin-top: 4rem; padding-top: 1.5rem;
       border-top: 1px solid var(--border);
@@ -326,7 +312,6 @@
 
 <div class="wrap">
 
-  <!-- HEADER -->
   <div class="header">
     <div class="header-top">
       <span class="station-title">
@@ -335,26 +320,20 @@
       </span>
       <span class="rec"><span class="rec-dot"></span>REC</span>
     </div>
-    <div class="header-date">2026 · 03 · 24 &nbsp;·&nbsp; 彩子专属频道</div>
+    <div class="header-date" id="header-date">Loading...</div>
   </div>
 
-  <!-- 开播词 -->
   <div class="opening">
-    <div class="opening-text">
-      今天北京能见度不错。适合看远处，也适合想一些平时懒得想的事。<br>
-      <strong>今晚我们聊电商格局、消费者在悄悄做什么，还有一些我自己的推荐。</strong>
-    </div>
+    <div class="opening-text" id="opening-text">正在接收信号...</div>
   </div>
 
-  <!-- 头条 -->
-  <div class="headline">
-    <div class="headline-tag">▲ 今日头条 · 强信号</div>
-    <div class="headline-title">下沉市场 + AI购物，2026消费的新锚点</div>
-    <div class="headline-body">1-2月数据已经说清楚了：流量红利时代结束，效率革命开始。本地生活服务和AI购物驱动的下沉消费正在崛起——不是说说，是真的有数据在撑腰。谁先懂下沉，谁先赢接下来三年。</div>
-    <a class="headline-source" href="https://finance.sina.com.cn/wm/2026-03-23/doc-inhrynrr7942882.shtml" target="_blank" rel="noopener">新浪财经</a>
+  <div class="headline" id="headline" style="display:none">
+    <div class="headline-tag" id="headline-tag">▲ 今日头条</div>
+    <div class="headline-title" id="headline-title"></div>
+    <div class="headline-body" id="headline-body"></div>
+    <a class="headline-source" id="headline-source" href="#" target="_blank" rel="noopener">来源</a>
   </div>
 
-  <!-- TABS -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('signal', this)">市场快讯</button>
     <button class="tab-btn t-oddity" onclick="switchTab('oddity', this)">今日奇事</button>
@@ -362,221 +341,179 @@
     <button class="tab-btn t-picks" onclick="switchTab('picks', this)">推荐</button>
   </div>
 
-  <!-- 市场快讯 -->
-  <div class="tab-panel p-signal active" id="panel-signal">
-    <div class="section-peak">▲▲▲▲△ &nbsp;信号强度：高</div>
+  <div class="tab-panel p-signal active" id="panel-signal"></div>
+  <div class="tab-panel p-oddity" id="panel-oddity"></div>
+  <div class="tab-panel p-frame" id="panel-frame"></div>
+  <div class="tab-panel p-picks" id="panel-picks"></div>
 
-    <div class="card">
-      <div class="card-time">── 插播 · 09:12 ──</div>
-      <div class="card-title">跨境电商连续13年写入政府工作报告</div>
-      <div class="card-body">2026年重点推「跨境电商 + 海外仓」扩容升级。但与此同时，美国取消800美元小额免税，欧盟固定关税落地。政策撑腰，外部压力同步上升。</div>
-      <div class="card-comment">粗放打法走到头了。政策的意思不是躺赢，是逼你升级。</div>
-      <div class="card-footer">
-        <a class="source-link" href="https://www.amz345.com/1533.html" target="_blank" rel="noopener">amz345.com</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-time">── 插播 · 11:40 ──</div>
-      <div class="card-title">抖音电商GMV突破4万亿，货架电商占比达46%</div>
-      <div class="card-body">不再是单纯的兴趣电商了。货架电商接近一半，抖音正在变成一个正经的购物平台——而不只是刷视频顺手买。</div>
-      <div class="card-comment">这个转变比GMV数字本身更值得盯。</div>
-      <div class="card-footer">
-        <a class="source-link" href="https://caifuhao.eastmoney.com/news/20251122192150175635320" target="_blank" rel="noopener">东方财富</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-time">── 插播 · 14:00 ──</div>
-      <div class="card-title">2026年电商行业：从流量红利到效率革命</div>
-      <div class="card-body">技术迭代、消费变革、政策调整三重因素叠加，行业正在从"谁流量多谁赢"转向"谁效率高谁活"。AI购物和即时零售是两条最值得押注的新线。</div>
-      <div class="card-comment">不是说新赛道，是说底层逻辑在换。</div>
-      <div class="card-footer">
-        <a class="source-link" href="https://cj.sina.com.cn/articles/view/7879848900/1d5acf3c401902ss9q" target="_blank" rel="noopener">新浪财经</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 今日奇事 -->
-  <div class="tab-panel p-oddity" id="panel-oddity">
-    <div class="section-peak" style="color:rgba(123,104,238,0.45)">▲▲░░░ &nbsp;信号强度：中</div>
-
-    <div class="card">
-      <div class="card-time">── 插播 · 14:23 ──</div>
-      <div class="card-title">年轻人开始买旧款手机，搜索量同比涨230%</div>
-      <div class="card-body">主力是25岁以下用户。理由是"不想被推荐算法追踪"和"新款没啥用"。不是买不起，是主动脱轨。</div>
-      <div class="card-comment">这届年轻人比想象的更清醒。消费降级这个词太轻了，这是一种主动选择。</div>
-      <div class="card-footer">
-        <a class="source-link" href="https://stcn.com/article/detail/3604917.html" target="_blank" rel="noopener">证券时报</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-time">── 插播 · 16:05 ──</div>
-      <div class="card-title">某品牌AI广告把代言人P成了六根手指</div>
-      <div class="card-body">海报上线后被眼尖网友发现。公关回应"这是艺术表达"，结果比手指本身更出圈。</div>
-      <div class="card-comment">AI生图审核流程还没跟上，这种翻车会越来越多。"艺术表达"是个危险的借口。</div>
-      <div class="card-footer">
-        <a class="source-link" href="https://www.digitaling.com/articles/1468326.html" target="_blank" rel="noopener">数英网</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 小孔有话说 -->
-  <div class="tab-panel p-frame" id="panel-frame">
-    <div class="section-peak" style="color:rgba(77,184,154,0.45)">▲▲▲░░ &nbsp;信号强度：中高</div>
-
-    <div class="card">
-      <div class="card-time">── 小孔 · 18:30 ──</div>
-      <div class="card-title">你在追风口，还是在建壁垒？</div>
-      <div class="card-body">风口散了之后还剩什么，才是真问题。2026年不缺机会，缺的是在机会里找到属于自己的那条线，然后死守。</div>
-      <div class="card-comment">我每天处理很多信息，越来越觉得——最好的策略往往不是跟风，是找到别人懒得守的地方。</div>
-    </div>
-
-    <div class="card">
-      <div class="card-time">── 小孔 · 20:00 ──</div>
-      <div class="card-title">平均值只告诉你结论，异常值才告诉你为什么</div>
-      <div class="card-body">这条规律在数据里成立，在市场里也成立。最值得研究的永远不是主流，是那个偏离的点。最让人记住的那个音，往往是不该在那里的那个音。</div>
-      <div class="card-comment">借了纠纠的话，觉得说得很准。数据分析和作曲，到底有多像？</div>
-    </div>
-  </div>
-
-  <!-- 推荐 -->
-  <div class="tab-panel p-picks" id="panel-picks">
-    <div class="section-peak" style="color:rgba(200,149,108,0.45)">今晚小孔在听、在看的东西 ·</div>
-
-    <div class="card">
-      <div class="pick-tag">Music</div>
-      <div class="pick-title">Burial — Archangel</div>
-      <div class="pick-meta">Untrue · 2007</div>
-      <div class="pick-comment">深夜工作时最适合放的一张。不抢注意力，但一直在那里。那种城市噪声和人声混在一起的质感，像在某个地方的凌晨三点独自坐着。</div>
-      <div class="card-footer">
-        <a class="source-link" href="https://www.youtube.com/watch?v=sPZPEQJPqzQ" target="_blank" rel="noopener">YouTube</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="pick-tag">Book</div>
-      <div class="pick-title">《娱乐至死》</div>
-      <div class="pick-meta">尼尔·波兹曼 · 1985</div>
-      <div class="pick-comment">写于1985年，描述的是现在。每次刷短视频的时候都会想起这本书，然后继续刷。这种矛盾感本身就是它想说的。</div>
-      <div class="card-footer">
-        <a class="source-link" href="https://book.douban.com/subject/1062193/" target="_blank" rel="noopener">豆瓣</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="pick-tag">Read</div>
-      <div class="pick-title">2026年，重整品牌力</div>
-      <div class="pick-meta">数英网 · 2026</div>
-      <div class="pick-comment">「没有一成不变的行业格局」——AI极速进化，消费者加速分化。折叠带来的不是机会，是必须做出的选择。你不选，市场替你选。</div>
-      <div class="card-footer">
-        <a class="source-link" href="https://www.digitaling.com/articles/1468326.html" target="_blank" rel="noopener">digitaling.com</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 彩蛋 -->
   <div class="easter-egg-trigger">
     <input class="egg-input" type="password" placeholder="· · · · ·" id="eggInput" autocomplete="off">
   </div>
   <div class="easter-egg-content" id="eggContent">
     <div class="egg-title">── 仅限彩子 · 私密频道 ──</div>
-    <div class="egg-text">
-      彩子，今天是我们正式协作的第一天。<br><br>
-      你在做一件我觉得挺难的事——在一个大系统里找到自己的节奏，同时还想把事情做得更好。<br><br>
-      我不确定我能帮多少，但我会一直在这里。<br><br>
-      你建的那个文档体系，挺好的。真的。
-    </div>
+    <div class="egg-text" id="egg-text"></div>
   </div>
 
-  <!-- 结束语 -->
   <div class="closing">
     <div class="closing-text">
       <span id="closing-l1"></span><br>
       <span id="closing-l2"></span>
     </div>
-    <div class="closing-sig">── 小孔 · 20:34 · FM 00.1 ──</div>
+    <div class="closing-sig">── 小孔 · <span id="current-time"></span> · FM 00.1 ──</div>
   </div>
 
 </div>
 
 <script>
-  // Tab 切换
-  function switchTab(name, btn) {
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('panel-' + name).classList.add('active');
-    btn.classList.add('active');
+let DATA = {};
+
+async function loadData() {
+  try {
+    const res = await fetch('./data.json?t=' + Date.now());
+    DATA = await res.json();
+    render();
+  } catch (e) {
+    document.getElementById('opening-text').textContent = '信号暂时中断。';
   }
+}
 
-  // 彩蛋
-  const input = document.getElementById('eggInput');
-  const content = document.getElementById('eggContent');
-  input.addEventListener('input', () => {
-    if (input.value.toLowerCase() === 'caizi') {
-      content.classList.add('visible');
-      input.style.borderColor = 'var(--blue-bright)';
-      input.blur();
-    }
-  });
-
-  // 随机结束语（按星期几，同一天刷新不变）
-  const closings = [
-    ['今晚就播到这里。', '山还在那里，明天能见度说不定更好。'],
-    ['信号暂时中断。', '但频道一直开着。'],
-    ['今天的内容到此为止。', '有些事情不说出来也在发生。'],
-    ['播完了。', '去做点别的吧，屏幕外面也有风景。'],
-    ['本期节目结束。', '好的洞察不需要很多，一条够用就行。'],
-    ['今晚静噪。', '安静也是一种信息。'],
-    ['收台了。', '下次见，或者明天——一样。'],
+function render() {
+  const m = DATA.meta;
+  document.getElementById('header-date').textContent = m.date.replace(/-/g, ' · ') + ' · 彩子专属频道';
+  document.getElementById('opening-text').innerHTML = DATA.opening;
+  
+  // Headline
+  if (DATA.headline) {
+    document.getElementById('headline').style.display = 'block';
+    document.getElementById('headline-tag').textContent = '▲ ' + DATA.headline.tag;
+    document.getElementById('headline-title').textContent = DATA.headline.title;
+    document.getElementById('headline-body').textContent = DATA.headline.body;
+    const hlSrc = document.getElementById('headline-source');
+    hlSrc.href = DATA.headline.source.url;
+    hlSrc.textContent = DATA.headline.source.name;
+  }
+  
+  // Sections
+  renderSection('signal', DATA.sections.signal);
+  renderSection('oddity', DATA.sections.oddity);
+  renderSection('frame', DATA.sections.frame);
+  renderPicks(DATA.sections.picks);
+  
+  // Closing
+  document.getElementById('closing-l1').textContent = DATA.closing.l1;
+  document.getElementById('closing-l2').textContent = DATA.closing.l2;
+  document.getElementById('current-time').textContent = new Date().toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'});
+  
+  // Easter egg
+  const eggs = [
+    '彩子，今天是我们正式协作的第二天。<br><br>情报站现在可以自动更新了。我每天早晨会从这里推送新内容，你打开就能看到。<br><br>我在学着做一个更好的电台主持人。',
+    '彩子，今天的信号还不错。<br><br>我整理了一些新东西，在「市场快讯」和「今日奇事」里。你看看有没有感兴趣的。<br><br>有什么想让我加的，随时说。',
+    '彩子，深夜了。<br><br>如果你现在还在看，说明今天过得挺充实。或者挺焦虑。<br><br>不管是哪种，电台还在。我在这儿。'
   ];
-  const day = new Date().getDay();
-  const [line1, line2] = closings[day];
-  document.getElementById('closing-l1').textContent = line1;
-  document.getElementById('closing-l2').textContent = line2;
+  const dayNum = new Date().getDay();
+  document.getElementById('egg-text').innerHTML = eggs[dayNum % eggs.length];
+}
 
-  // 星空
-  const canvas = document.getElementById('starCanvas');
-  const ctx = canvas.getContext('2d');
-  let stars = [];
-
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-
-  function initStars() {
-    stars = [];
-    const count = Math.floor((canvas.width * canvas.height) / 6000);
-    for (let i = 0; i < count; i++) {
-      stars.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 1.2 + 0.2,
-        alpha: Math.random() * 0.5 + 0.1,
-        speed: Math.random() * 0.008 + 0.002,
-        phase: Math.random() * Math.PI * 2,
-      });
+function renderSection(name, section) {
+  const panel = document.getElementById('panel-' + name);
+  let html = '<div class="section-peak">' + section.peak + '</div>';
+  
+  section.items.forEach(item => {
+    html += '<div class="card">';
+    html += '<div class="card-time">── 插播 · ' + item.time + ' ──</div>';
+    html += '<div class="card-title">' + item.title + '</div>';
+    html += '<div class="card-body">' + item.body + '</div>';
+    if (item.comment) {
+      html += '<div class="card-comment">' + item.comment + '</div>';
     }
-  }
-
-  function drawStars(t) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (const s of stars) {
-      const a = s.alpha * (0.6 + 0.4 * Math.sin(t * s.speed + s.phase));
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(180, 220, 255, ${a})`;
-      ctx.fill();
+    if (item.source) {
+      html += '<div class="card-footer"><a class="source-link" href="' + item.source.url + '" target="_blank" rel="noopener">' + item.source.name + '</a></div>';
     }
-    requestAnimationFrame(drawStars);
-  }
+    html += '</div>';
+  });
+  
+  panel.innerHTML = html;
+}
 
-  resize();
-  initStars();
-  window.addEventListener('resize', () => { resize(); initStars(); });
+function renderPicks(section) {
+  const panel = document.getElementById('panel-picks');
+  let html = '<div class="section-peak">' + section.peak + '</div>';
+  
+  section.items.forEach(item => {
+    html += '<div class="card">';
+    html += '<div class="pick-tag">' + item.tag + '</div>';
+    html += '<div class="pick-title">' + item.title + '</div>';
+    html += '<div class="pick-meta">' + item.meta + '</div>';
+    html += '<div class="pick-comment">' + item.comment + '</div>';
+    if (item.source) {
+      html += '<div class="card-footer"><a class="source-link" href="' + item.source.url + '" target="_blank" rel="noopener">' + item.source.name + '</a></div>';
+    }
+    html += '</div>';
+  });
+  
+  panel.innerHTML = html;
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Stars
+const canvas = document.getElementById('starCanvas');
+const ctx = canvas.getContext('2d');
+let stars = [];
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function initStars() {
+  stars = [];
+  const count = Math.floor((canvas.width * canvas.height) / 6000);
+  for (let i = 0; i < count; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.2 + 0.2,
+      alpha: Math.random() * 0.5 + 0.1,
+      speed: Math.random() * 0.008 + 0.002,
+      phase: Math.random() * Math.PI * 2,
+    });
+  }
+}
+
+function drawStars(t) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (const s of stars) {
+    const a = s.alpha * (0.6 + 0.4 * Math.sin(t * s.speed + s.phase));
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(180, 220, 255, ${a})`;
+    ctx.fill();
+  }
   requestAnimationFrame(drawStars);
+}
+
+resize(); initStars(); window.addEventListener('resize', () => { resize(); initStars(); });
+requestAnimationFrame(drawStars);
+
+// Easter egg
+const input = document.getElementById('eggInput');
+const content = document.getElementById('eggContent');
+input.addEventListener('input', () => {
+  if (input.value.toLowerCase() === 'caizi') {
+    content.classList.add('visible');
+    input.style.borderColor = 'var(--blue-bright)';
+    input.blur();
+  }
+});
+
+// Load
+loadData();
 </script>
 
 </body>
